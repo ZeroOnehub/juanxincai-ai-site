@@ -5,7 +5,7 @@
 这是 AI 自由职业者「卷心菜」的个人网站：一个面向获客与个人品牌建设的中文单页站点。
 它不只是介绍服务，而是直接放了一个**可以玩的 AI 工坊**，让访客现场看到 Prompt、文案、自动化流程是怎么被组织起来交付的。
 
-🔗 线上地址：https://fanye658.github.io/juanxincai-ai-site/
+🔗 线上地址：https://zeroonehub.github.io/juanxincai-ai-site/
 
 ## 网站亮点
 
