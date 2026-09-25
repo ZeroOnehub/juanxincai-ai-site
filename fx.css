@@ -1,0 +1,413 @@
+/* ============================================================
+   卷心菜 · 炫酷特效层（fx.css）
+   只负责视觉特效，删除本文件和 fx.js 即可回到原版效果。
+   ============================================================ */
+
+@property --fx-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ---------- 1. 粒子神经网络画布（fx.js 绘制） ---------- */
+
+.fx-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.fx-canvas.is-ready {
+  opacity: 1;
+}
+
+/* ---------- 2. 极光流动光斑 ---------- */
+
+.fx-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(80px) saturate(140%);
+  opacity: 0.55;
+}
+
+.fx-aurora span {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.fx-aurora span:nth-child(1) {
+  top: -18vmax;
+  left: -10vmax;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.45), transparent 65%);
+  animation: fxDrift1 22s ease-in-out infinite alternate;
+}
+
+.fx-aurora span:nth-child(2) {
+  top: 10vmax;
+  right: -16vmax;
+  background: radial-gradient(circle, rgba(168, 112, 255, 0.32), transparent 65%);
+  animation: fxDrift2 28s ease-in-out infinite alternate;
+}
+
+.fx-aurora span:nth-child(3) {
+  bottom: -24vmax;
+  left: 20vmax;
+  background: radial-gradient(circle, rgba(var(--signal-rgb), 0.16), transparent 65%);
+  animation: fxDrift3 26s ease-in-out infinite alternate;
+}
+
+@keyframes fxDrift1 {
+  to { transform: translate(18vmax, 12vmax) scale(1.2); }
+}
+@keyframes fxDrift2 {
+  to { transform: translate(-22vmax, 16vmax) scale(0.85); }
+}
+@keyframes fxDrift3 {
+  to { transform: translate(-14vmax, -18vmax) scale(1.15); }
+}
+
+/* ---------- 3. Hero 透视网格地面 ---------- */
+
+.hero {
+  overflow: hidden;
+}
+
+.fx-hero-grid {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -40px;
+  height: 340px;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--accent-rgb), 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--accent-rgb), 0.22) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(520px) rotateX(62deg);
+  transform-origin: center bottom;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  animation: fxGridMove 3.2s linear infinite;
+}
+
+@keyframes fxGridMove {
+  to { background-position: 0 56px, 0 0; }
+}
+
+/* ---------- 4. 流光渐变文字 ---------- */
+
+.hero-title .rotator,
+.contact-panel .section-title .accent {
+  background: linear-gradient(
+    100deg,
+    var(--accent) 0%,
+    #c4b5ff 25%,
+    var(--signal) 50%,
+    #c4b5ff 75%,
+    var(--accent) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fxShimmer 5s linear infinite;
+  text-shadow: none;
+}
+
+/* 继承的 text-shadow 会盖在渐变文字上面发灰，这里去掉 */
+.hero-title .accent,
+.contact-panel .section-title .accent {
+  text-shadow: none;
+  filter: drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.35));
+}
+
+@keyframes fxShimmer {
+  to { background-position: -200% center; }
+}
+
+/* 标题解码时的乱码字符 */
+.fx-glyph {
+  color: var(--signal);
+  opacity: 0.8;
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* ---------- 5. Hero 演示窗：旋转流光边框 + 3D 倾斜 ---------- */
+
+.hero-demo {
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease-out, box-shadow 0.3s ease;
+}
+
+.hero-demo::before {
+  inset: 0;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--fx-angle),
+    transparent 0deg,
+    rgba(var(--accent-rgb), 0.95) 60deg,
+    rgba(var(--signal-rgb), 0.9) 110deg,
+    transparent 170deg,
+    transparent 360deg
+  );
+  opacity: 0.9;
+  animation: fxSpin 4.5s linear infinite;
+}
+
+@keyframes fxSpin {
+  to { --fx-angle: 360deg; }
+}
+
+.hero-demo.is-tilting {
+  box-shadow: var(--shadow-xl), 0 30px 120px rgba(var(--accent-rgb), 0.22);
+}
+
+/* 扫描线 */
+.hero-demo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 80px;
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), 0.08), transparent);
+  pointer-events: none;
+  animation: fxScan 4s ease-in-out infinite;
+}
+
+@keyframes fxScan {
+  0% { transform: translateY(-80px); }
+  100% { transform: translateY(520px); }
+}
+
+/* ---------- 6. 卡片鼠标聚光（边框 + 内部光斑） ---------- */
+
+.fx-spot {
+  position: relative;
+  isolation: isolate;
+}
+
+.fx-spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    380px circle at var(--sx, 50%) var(--sy, 50%),
+    rgba(var(--accent-rgb), 0.85),
+    rgba(var(--signal-rgb), 0.25) 40%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fx-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    500px circle at var(--sx, 50%) var(--sy, 50%),
+    rgba(var(--accent-rgb), 0.08),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.fx-spot.is-lit::after,
+.fx-spot.is-lit::before {
+  opacity: 1;
+}
+
+/* ---------- 7. 技能跑马灯 ---------- */
+
+.fx-marquee {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 0;
+  border-top: 1px solid var(--border);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.fx-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 48px;
+  animation: fxMarquee 38s linear infinite;
+}
+
+.fx-marquee:hover .fx-marquee-track {
+  animation-play-state: paused;
+}
+
+.fx-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 48px;
+  white-space: nowrap;
+  font: 700 28px/1 "Inter", "Noto Sans SC", sans-serif;
+  letter-spacing: -0.01em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+  transition: color 0.3s ease, -webkit-text-stroke-color 0.3s ease;
+}
+
+.fx-marquee-item:hover {
+  color: var(--text);
+  -webkit-text-stroke-color: transparent;
+}
+
+.fx-marquee-item::after {
+  content: "✦";
+  color: var(--signal);
+  -webkit-text-stroke: 0;
+  font-size: 18px;
+  text-shadow: 0 0 12px rgba(var(--signal-rgb), 0.7);
+}
+
+@keyframes fxMarquee {
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- 8. 主按钮光泽扫过 ---------- */
+
+.btn-primary {
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--accent), #b3a4ff);
+}
+
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  animation: fxShine 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fxShine {
+  0%, 60% { left: -60%; }
+  100% { left: 130%; }
+}
+
+.btn-primary > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- 9. 点击涟漪火花 ---------- */
+
+.fx-spark {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 200;
+  background: var(--signal);
+  box-shadow: 0 0 10px rgba(var(--signal-rgb), 0.9);
+  animation: fxSpark 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fxSpark {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  to {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+    opacity: 0;
+  }
+}
+
+.fx-ring {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.9);
+  pointer-events: none;
+  z-index: 200;
+  transform: translate(-50%, -50%);
+  animation: fxRing 0.6s ease-out forwards;
+}
+
+@keyframes fxRing {
+  to { width: 90px; height: 90px; opacity: 0; }
+}
+
+/* ---------- 10. 统计数字辉光 ---------- */
+
+.stat-num {
+  filter: drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.25));
+}
+
+/* ---------- 响应式 & 无障碍 ---------- */
+
+@media (max-width: 767px) {
+  .fx-marquee-item {
+    font-size: 20px;
+    gap: 32px;
+  }
+
+  .fx-marquee-track {
+    gap: 32px;
+  }
+
+  .fx-hero-grid {
+    height: 220px;
+  }
+
+  .fx-aurora {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-aurora span,
+  .fx-hero-grid,
+  .fx-marquee-track,
+  .hero-demo::before,
+  .hero-demo::after,
+  .btn-primary::after,
+  .hero-title .rotator,
+  .contact-panel .section-title .accent {
+    animation: none !important;
+  }
+
+  .fx-spark,
+  .fx-ring {
+    display: none;
+  }
+}
+
+/* 入场动画结束后解除 animation，让 3D 倾斜的行内 transform 生效 */
+.hero-demo.fx-settled {
+  animation: none;
+  opacity: 1;
+}
